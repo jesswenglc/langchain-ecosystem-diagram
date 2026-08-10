@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Layering deck viewer (simple)</title>
+<style>
+  html,body{margin:0;height:100%;background:#0d1117;color:#e6edf3;font-family:Helvetica,Arial,sans-serif;}
+  #bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#161b22;border-bottom:1px solid #30363d;}
+  #bar button{background:#21262d;color:#e6edf3;border:1px solid #30363d;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:14px;}
+  #bar button:hover{background:#30363d;}
+  #meta{font-size:14px;color:#8b949e;}
+  #meta b{color:#e6edf3;}
+  #stage{display:flex;justify-content:center;align-items:center;height:calc(100vh - 53px);overflow:auto;}
+  img{max-width:96%;max-height:96%;box-shadow:0 0 0 1px #30363d;}
+  #jump{background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:6px;padding:5px 8px;width:220px;font-size:13px;}
+</style></head>
+<body>
+  <div id="bar">
+    <button id="prev">&larr; Prev</button>
+    <button id="next">Next &rarr;</button>
+    <select id="jump"></select>
+    <div id="meta"></div>
+  </div>
+  <div id="stage"><img id="slide"></div>
+<script>
+  const slides = [{"name":"01-langgraph","title":"LangGraph: the agent runtime","step":"Step 1: the runtime"},{"name":"02-langchain","title":"LangChain: a prebuilt loop, built on LangGraph","step":"Step 2: the agent layer"},{"name":"03-deepagents","title":"Deep Agents: LangChain + opinionated middleware","step":"Step 2: the agent layer"},{"name":"03a-focus-langchain","title":"Zooming into LangChain","step":"the agent loop"},{"name":"03b-langchain-loop","title":"LangChain's agent loop","step":"the agent loop"},{"name":"03c-langchain-middleware","title":"Middleware wraps the agent loop","step":"the agent loop"},{"name":"03d0-focus-deepagents","title":"Zooming into Deep Agents","step":"Deep Agents middleware"},{"name":"03d1-deepagents-categories","title":"Deep Agents' default middleware: execution environment","step":"Deep Agents middleware"},{"name":"03d2-deepagents-categories","title":"Deep Agents' default middleware: delegation","step":"Deep Agents middleware"},{"name":"03d3-deepagents-categories","title":"Deep Agents' default middleware: steering","step":"Deep Agents middleware"},{"name":"03d4-deepagents-categories","title":"Deep Agents' default middleware, by category","step":"Deep Agents middleware"},{"name":"03e-deepagents-middleware","title":"Each category maps to concrete middleware","step":"Deep Agents middleware"},{"name":"04-recap","title":"Two tiers, not three","step":"Recap"},{"name":"04b-abstraction-axis","title":"How opinionated is the abstraction?","step":"deploying to production"},{"name":"04c-deployment-axis","title":"How opinionated is the deployment?","step":"deploying to production"},{"name":"05a-harness-configured","title":"Your project files configure the harness","step":"deploying to production"},{"name":"05b-managed-deep-agents","title":"Managed Deep Agents: production concerns, same harness","step":"deploying to production"}];
+  let i = 0;
+  const img = document.getElementById('slide');
+  const meta = document.getElementById('meta');
+  const jump = document.getElementById('jump');
+  slides.forEach((s, idx) => {
+    const o = document.createElement('option');
+    o.value = idx; o.textContent = (idx + 1) + '. ' + s.name;
+    jump.appendChild(o);
+  });
+  function render() {
+    const s = slides[i];
+    img.src = s.name + '.svg?_=' + Date.now();
+    meta.innerHTML = '<b>' + (i + 1) + ' / ' + slides.length + '</b> &nbsp; ' + s.name + ' &nbsp; ' + (s.step || '');
+    jump.value = i;
+  }
+  function go(delta) { i = (i + delta + slides.length) % slides.length; render(); }
+  document.getElementById('prev').onclick = () => go(-1);
+  document.getElementById('next').onclick = () => go(1);
+  jump.onchange = () => { i = Number(jump.value); render(); };
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+  render();
+</script>
+</body></html>
